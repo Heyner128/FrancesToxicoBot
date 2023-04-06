@@ -19,8 +19,17 @@ const logger = createLogger({
     logTextFormat
   ),
   transports: [
-    new transports.File({ filename: './logs/error.log', level: 'error' }),
-    new transports.File({ filename: './logs/combined.log' }),
+    new transports.File({
+      filename: './logs/error.log',
+      level: 'error',
+      handleExceptions: true,
+      handleRejections: true,
+    }),
+    new transports.File({
+      filename: './logs/combined.log',
+      handleExceptions: true,
+      handleRejections: true,
+    }),
   ],
 });
 
