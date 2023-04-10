@@ -5,7 +5,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc",
     "start": "npm run build && ts-node --esm build/main.js",
-    "start:ci": "npm run build && ts-node --esm build/main.js",
+    "start:ci": "ts-node --esm build/main.js",
     "start:dev": "nodemon --exec ts-node --esm src/main.ts",
     "lint": "eslint --ext .ts src",
     "lint:fix": "eslint --ext .ts src --fix",
