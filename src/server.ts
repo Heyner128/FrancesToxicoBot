@@ -3,6 +3,7 @@ import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import TelegramBot, { Update } from 'node-telegram-bot-api';
 import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import { createLogger, format, transports } from 'winston';
+import path from 'node:path';
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
@@ -20,11 +21,11 @@ const logger = createLogger({
   ),
   transports: [
     new transports.File({
-      filename: './logs/error.log',
+      filename: path.join(process.cwd(), 'logs', 'error.log'),
       level: 'error',
     }),
     new transports.File({
-      filename: './logs/combined.log',
+      filename: path.join(process.cwd(), 'logs', 'combined.log'),
     }),
     new transports.Console({
       format: format.combine(format.colorize(), logTextFormat),
