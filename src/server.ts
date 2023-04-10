@@ -47,6 +47,12 @@ if (process.env.NODE_ENV !== 'production') {
     })
   );
 } else {
+  // enables console logging in development
+  logger.add(
+    new transports.Console({
+      format: format.combine(format.colorize(), logTextFormat),
+    })
+  );
   // enables webhook in production
   if (!process.env.PUBLIC_URL) throw new Error('PUBLIC_URL is not defined!');
   await chatBot.setWebHook(
