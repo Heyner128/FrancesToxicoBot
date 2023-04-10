@@ -6,7 +6,7 @@ import { createLogger, format, transports } from 'winston';
 
 const logTextFormat = format.printf(
   ({ level, message, timestamp, stack }) =>
-    `${timestamp} ${level}: ${stack || message}`
+    `${timestamp} ${level}: ${stack || message} `
 );
 
 const logger = createLogger({
