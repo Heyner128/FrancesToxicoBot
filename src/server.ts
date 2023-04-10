@@ -23,9 +23,13 @@ const logger = createLogger({
     new transports.File({
       filename: path.join(process.cwd(), 'logs', 'error.log'),
       level: 'error',
+      handleExceptions: true,
+      handleRejections: true,
     }),
     new transports.File({
       filename: path.join(process.cwd(), 'logs', 'combined.log'),
+      handleExceptions: true,
+      handleRejections: true,
     }),
     new transports.Console({
       format: format.combine(format.colorize(), logTextFormat),
