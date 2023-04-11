@@ -11,6 +11,8 @@ import {
 } from '../Utils/types.util';
 import { CreateTokenSchema } from '../Models/tokens.dto';
 
+const userRedeeming: number[] = [];
+
 /**
  * This is called when the user sends the token to the bot
  * @param msg - The message object
@@ -49,7 +51,6 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
       );
     } catch (error) {
       Server.logger.error(new Error(`Error redeeming token ${msg.text}`));
-      await Server.chatBot.removeTextListener(/.+/);
       return await Server.chatBot.sendMessage(
         msg.chat.id,
         'No se pudo activar la subscripción'
@@ -73,16 +74,18 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
  *
  * @throws Error if the message object is not valid
  */
-async function redeemToken(msg: Message): Promise<Message> {
-  if (msg.chat.id && msg.text) {
+async function redeemToken(msg: Message): Promise<Message | undefined> {
+  if (msg.chat.id && msg.text && !userRedeeming.includes(msg.chat.id)) {
+    userRedeeming.push(msg.chat.id);
+
+    await Server.chatBot.removeTextListener(/.+/);
+
     await Server.chatBot.sendMessage(
       msg.chat.id,
       'Escribe el código de la subscripción'
     );
 
     Server.logger.info(`Token requested to user ${msg.chat.id}`);
-
-    await Server.chatBot.removeTextListener(/.+/);
 
     // FIXME IMPORTANT there's a memory leak here
     // possible causes: the listener is not removed when the user sends the token
@@ -94,6 +97,8 @@ async function redeemToken(msg: Message): Promise<Message> {
           resolve(redeemTokenListener(msgCB));
         } catch (error) {
           reject(error);
+        } finally {
+          userRedeeming.splice(userRedeeming.indexOf(msg.chat.id), 1);
         }
       });
     });
