@@ -74,8 +74,8 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
  *
  * @throws Error if the message object is not valid
  */
-async function redeemToken(msg: Message): Promise<Message | undefined> {
-  if (userRedeeming.includes(msg.chat.id)) return;
+async function redeemToken(msg: Message): Promise<Message | boolean> {
+  if (userRedeeming.includes(msg.chat.id)) return false;
 
   if (msg.chat.id && msg.text) {
     userRedeeming.push(msg.chat.id);
@@ -106,11 +106,11 @@ async function redeemToken(msg: Message): Promise<Message | undefined> {
       });
     });
   }
-
   const error = new Error(
     'Error getting message informations from telegram API'
   );
   Server.logger.error(error);
+  throw error;
 }
 
 /**
