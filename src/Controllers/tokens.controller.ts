@@ -41,8 +41,6 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
       Server.logger.info(
         `Subscription created for group ${subscription.groupId} until ${subscription.expiresAt} `
       );
-
-      await Server.chatBot.removeTextListener(/.+/);
       return await Server.chatBot.sendMessage(
         msg.chat.id,
         `Subscripción activada correctamente, expira el ${dayjs(
@@ -52,10 +50,12 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
     } catch (error) {
       Server.logger.error(new Error(`Error redeeming token ${msg.text}`));
       await Server.chatBot.removeTextListener(/.+/);
-      return Server.chatBot.sendMessage(
+      return await Server.chatBot.sendMessage(
         msg.chat.id,
         'No se pudo activar la subscripción'
       );
+    } finally {
+      await Server.chatBot.removeTextListener(/.+/);
     }
   }
   const error = new Error(
@@ -82,6 +82,10 @@ async function redeemToken(msg: Message): Promise<Message> {
 
     Server.logger.info(`Token requested to user ${msg.chat.id}`);
 
+    // FIXME IMPORTANT there's a memory leak here
+    // possible causes: the listener is not removed when the user sends the token
+    // or the listener is not removed when the user sends a message that is not the token
+    // or the promise is not resolved when the user sends the token
     return new Promise((resolve, reject) => {
       Server.chatBot.onText(/.+/, (msgCB: Message) => {
         try {
