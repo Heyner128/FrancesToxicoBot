@@ -11,7 +11,7 @@ import {
 } from '../Utils/types.util';
 import { CreateTokenSchema } from '../Models/tokens.dto';
 
-const userRedeeming: number[] = [];
+const usersRedeeming: number[] = [];
 
 /**
  * This is called when the user sends the token to the bot
@@ -75,10 +75,10 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
  * @throws Error if the message object is not valid
  */
 async function redeemToken(msg: Message): Promise<Message | boolean> {
-  if (userRedeeming.includes(msg.chat.id)) return false;
+  if (usersRedeeming.includes(msg.chat.id)) return false;
 
   if (msg.chat.id && msg.text) {
-    userRedeeming.push(msg.chat.id);
+    usersRedeeming.push(msg.chat.id);
 
     await Server.chatBot.removeTextListener(/.+/);
 
@@ -90,10 +90,6 @@ async function redeemToken(msg: Message): Promise<Message | boolean> {
     Server.logger.info(`Token requested to user ${msg.chat.id}`);
 
     // FIXME IMPORTANT there's a memory leak here
-    // possible causes: the listener is not removed when the user sends the token
-    // or the listener is not removed when the user sends a message that is not the token
-    // or the promise is not resolved when the user sends the token
-    // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       Server.chatBot.onText(/.+/, (msgCB: Message) => {
         try {
@@ -101,7 +97,7 @@ async function redeemToken(msg: Message): Promise<Message | boolean> {
         } catch (error) {
           reject(error);
         } finally {
-          userRedeeming.splice(userRedeeming.indexOf(msg.chat.id), 1);
+          usersRedeeming.splice(usersRedeeming.indexOf(msg.chat.id), 1);
         }
       });
     });
