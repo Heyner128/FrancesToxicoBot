@@ -74,7 +74,7 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
  *
  * @throws Error if the message object is not valid
  */
-async function redeemToken(msg: Message): Promise<Message | undefined> {
+async function redeemToken(msg: Message): Promise<Message> {
   if (msg.chat.id && msg.text && !userRedeeming.includes(msg.chat.id)) {
     userRedeeming.push(msg.chat.id);
 
