@@ -82,6 +82,8 @@ async function redeemToken(msg: Message): Promise<Message> {
 
     Server.logger.info(`Token requested to user ${msg.chat.id}`);
 
+    await Server.chatBot.removeTextListener(/.+/);
+
     // FIXME IMPORTANT there's a memory leak here
     // possible causes: the listener is not removed when the user sends the token
     // or the listener is not removed when the user sends a message that is not the token
