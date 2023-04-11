@@ -74,8 +74,10 @@ async function redeemTokenListener(msg: Message): Promise<Message> {
  *
  * @throws Error if the message object is not valid
  */
-async function redeemToken(msg: Message): Promise<Message> {
-  if (msg.chat.id && msg.text && !userRedeeming.includes(msg.chat.id)) {
+async function redeemToken(msg: Message): Promise<Message | undefined> {
+  if (userRedeeming.includes(msg.chat.id)) return;
+
+  if (msg.chat.id && msg.text) {
     userRedeeming.push(msg.chat.id);
 
     await Server.chatBot.removeTextListener(/.+/);
@@ -91,6 +93,7 @@ async function redeemToken(msg: Message): Promise<Message> {
     // possible causes: the listener is not removed when the user sends the token
     // or the listener is not removed when the user sends a message that is not the token
     // or the promise is not resolved when the user sends the token
+    // eslint-disable-next-line consistent-return
     return new Promise((resolve, reject) => {
       Server.chatBot.onText(/.+/, (msgCB: Message) => {
         try {
@@ -103,11 +106,11 @@ async function redeemToken(msg: Message): Promise<Message> {
       });
     });
   }
+
   const error = new Error(
     'Error getting message informations from telegram API'
   );
   Server.logger.error(error);
-  throw error;
 }
 
 /**
